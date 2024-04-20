@@ -53,10 +53,6 @@ Each movie card provides essential information at a glance. Click on any movie t
 - **SharedPreferences:** To locally store user settings and preferences.
 - **TMDB API:** For fetching real-time data about movies.
 
-## Screenshots
-
-Include a few screenshots of the app here to show off its features and user interface.
-
 ## Contributing
 
 We welcome contributions to **PopcornPicker**. If you have suggestions or issues, please feel free to open an issue or submit a pull request.
