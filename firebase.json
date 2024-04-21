@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "popcornpicker-2b9f4",
+          "configurations": {
+            "android": "1:235919673805:android:220558ab975d07c23a9c84",
+            "ios": "1:235919673805:ios:d29429324f6a6b253a9c84",
+            "macos": "1:235919673805:ios:d29429324f6a6b253a9c84",
+            "web": "1:235919673805:web:1527ca9569a4c9333a9c84",
+            "windows": "1:235919673805:web:1527ca9569a4c9333a9c84"
+          }
+        }
+      },
+      "android": {
+        "default": {
+          "projectId": "popcornpicker-2b9f4",
+          "appId": "1:235919673805:android:220558ab975d07c23a9c84",
+          "fileOutput": "android/app/google-services.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "235919673805",
+    "project_id": "popcornpicker-2b9f4",
+    "storage_bucket": "popcornpicker-2b9f4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:235919673805:android:220558ab975d07c23a9c84",
+        "android_client_info": {
+          "package_name": "com.example.movie_tmdb_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtQAAulq-7K8BIMmBRr_kxuhxh9uLqKkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
