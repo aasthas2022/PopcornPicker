@@ -1,48 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:movie_list/screens/register_screen.dart';
+import '../services/auth_service.dart'; // Ensure this path is correct
 
-import '../services/auth_service.dart';
-
-class LoginScreen extends StatefulWidget {
+class RegistrationScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please fill in all fields'))
-      );
-      return;
-    }
+  Future<void> _register() async {
     setState(() => _isLoading = true);
     try {
-      await AuthService().signInWithEmailAndPassword(
+      await AuthService().registerWithEmailAndPassword(
           _emailController.text,
           _passwordController.text
       );
-      Navigator.pushReplacementNamed(context, '/main');
+      Navigator.pushReplacementNamed(context, '/profile_edit');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed: ${e.toString()}')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       setState(() => _isLoading = false);
     }
-  }
-
-  void _navigateToRegister() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('Register'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -62,13 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
             _isLoading
                 ? CircularProgressIndicator()
                 : ElevatedButton(
-              onPressed: _login,
-              child: Text('Login'),
+              onPressed: _register,
+              child: Text('Register'),
             ),
-            TextButton(
-              onPressed: _navigateToRegister,
-              child: Text('Register New Account'),
-            )
           ],
         ),
       ),
