@@ -1,5 +1,3 @@
-// screens/main_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/movie_bloc.dart';
@@ -9,6 +7,7 @@ import '../utils/dark_or_light_theme.dart';
 import '../widgets/search.dart';
 import '../widgets/movie_card.dart';
 import 'detail_screen.dart';
+import '../services/auth_service.dart';
 
 class MovieListScreen extends StatefulWidget {
   @override
@@ -43,25 +42,8 @@ class _MovieListScreenState extends State<MovieListScreen> {
         ),
         backgroundColor: Colors.deepOrange,
         actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: MovieSearchDelegate(),
-              );
-            },
-            child: Text(
-              "Search",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          ),
           IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
+            icon: Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -69,21 +51,16 @@ class _MovieListScreenState extends State<MovieListScreen> {
               );
             },
           ),
-          TextButton(
+          IconButton(
+            icon: Icon(Icons.lightbulb_outline),
             onPressed: () => context.read<AppStateCubit>().toggleTheme(),
-            child: Text(
-              "Toggle",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
           ),
           IconButton(
-            icon: Icon(
-              Icons.lightbulb_outline,
-              color: Colors.white,
-            ),
-            onPressed: () => context.read<AppStateCubit>().toggleTheme(),
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await AuthService().signOut();
+              Navigator.of(context).pushReplacementNamed('/login');
+            },
           ),
         ],
       ),

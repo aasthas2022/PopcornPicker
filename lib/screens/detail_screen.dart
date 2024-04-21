@@ -1,10 +1,9 @@
-// screens/detail_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../utils/dark_or_light_theme.dart';
 import '../models/movie.dart';
 import '../widgets/image.dart';
+import '../services/auth_service.dart';
 
 class MovieDetailScreen extends StatelessWidget {
   final Movie movie;
@@ -21,21 +20,16 @@ class MovieDetailScreen extends StatelessWidget {
         title: Text(movie.title),
         backgroundColor: Colors.deepOrange,
         actions: <Widget>[
-          TextButton(
+          IconButton(
+            icon: Icon(Icons.lightbulb_outline),
             onPressed: () => context.read<AppStateCubit>().toggleTheme(),
-            child: Text(
-              "Toggle",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
           ),
           IconButton(
-            icon: Icon(
-              Icons.lightbulb_outline,
-              color: Colors.white,
-            ),
-            onPressed: () => context.read<AppStateCubit>().toggleTheme(),
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await AuthService().signOut();
+              Navigator.of(context).pushReplacementNamed('/login');
+            },
           ),
         ],
       ),

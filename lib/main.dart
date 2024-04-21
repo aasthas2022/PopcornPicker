@@ -43,7 +43,6 @@ class MovieApp extends StatelessWidget {
           stream: authService.userChanges,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
-              // Check for the logged-in user
               if (snapshot.hasData) {
                 return MovieListScreen();
               }
