@@ -1,3 +1,5 @@
+// screens/main_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/movie_bloc.dart';
@@ -17,7 +19,7 @@ class MovieListScreen extends StatefulWidget {
 class _MovieListScreenState extends State<MovieListScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  void  _onSearchChanged() {
+  void _onSearchChanged() {
     context.read<MovieBloc>().add(SearchMovies(_searchController.text));
   }
 
@@ -27,6 +29,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
     MovieCategoryScreen(category: 'top_rated'),
     MovieCategoryScreen(category: 'now_playing'),
     MovieCategoryScreen(category: 'popular'),
+    MovieCategoryScreen(category: 'favorites'), // Added a new category for favorites
   ];
 
   void onTabTapped(int index) {
@@ -39,7 +42,6 @@ class _MovieListScreenState extends State<MovieListScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double cardWidth = screenWidth * 0.9;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -94,6 +96,9 @@ class _MovieListScreenState extends State<MovieListScreen> {
             icon: Icon(Icons.trending_up),
             label: 'Popular',
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Favorites'),  // Added an icon for favorites
         ],
       ),
     );
@@ -107,12 +112,16 @@ class MovieCategoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<MovieBloc>().add(
-        category == 'upcoming' ? FetchMovies() :
-        category == 'top_rated' ? FetchTopRatedMovies() :
-        category == 'now_playing' ? FetchNowPlayingMovies() :
-        FetchPopularMovies()
-    );
+    if (category == 'favorites') {
+      context.read<MovieBloc>().add(FetchFavorites());  // Assuming you have an event to fetch favorites
+    } else {
+      context.read<MovieBloc>().add(
+          category == 'upcoming' ? FetchMovies() :
+          category == 'top_rated' ? FetchTopRatedMovies() :
+          category == 'now_playing' ? FetchNowPlayingMovies() :
+          FetchPopularMovies()
+      );
+    }
 
     return BlocBuilder<MovieBloc, MovieState>(
       builder: (context, state) {
@@ -124,23 +133,29 @@ class MovieCategoryScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final movie = state.movies[index];
               return Dismissible(
-                key: Key(movie.id.toString()),
-                background: Container(color: Colors.red),
-                onDismissed: (direction) {
-                  context.read<MovieBloc>().add(DeleteMovie(movie.id));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("${movie.title} deleted")),
-                  );
-                },
-                child: InkWell(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => MovieDetailScreen(movie: movie),
-                    ),
+              key: Key(movie.id.toString()),
+              background: Container(color: Colors.red),
+              onDismissed: (direction) {
+                context.read<MovieBloc>().add(DeleteMovie(movie.id));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("${movie.title} deleted")),
+                );
+              },
+              child: InkWell(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MovieDetailScreen(movie: movie),
                   ),
-                  child: MovieCardWidget(movie: movie),
                 ),
+                child: MovieCardWidget(
+                    movie: movie,
+                    onFavoriteToggle: (isFavorite) {
+                      context.read<MovieBloc>().add(ToggleFavorite(movie.id, isFavorite));
+                    }
+                ),
+              ),
               );
+
             },
           );
         } else if (state is MoviesError) {

@@ -39,4 +39,23 @@ class MovieApi {
       throw Exception('Failed to load search results');
     }
   }
+
+  Future<List<Movie>> getMoviesByIds(List<int> ids) async {
+    List<Movie> movies = [];
+    for (var id in ids) {
+      final response = await http.get(
+        Uri.parse('$baseUrl/movie/$id'),
+        headers: {
+          'Authorization': 'Bearer $bearerToken',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        movies.add(Movie.fromJson(json.decode(response.body)));
+      } else {
+        throw Exception('Failed to load movie with id $id');
+      }
+    }
+    return movies;
+  }
 }

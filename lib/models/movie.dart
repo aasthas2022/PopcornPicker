@@ -6,6 +6,7 @@ class Movie {
   final String description;
   final String posterPath;
   final double rating;
+  bool isFavorite;
 
   Movie({
     required this.id,
@@ -13,6 +14,7 @@ class Movie {
     required this.description,
     required this.posterPath,
     required this.rating,
+    this.isFavorite = false,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,7 @@ class Movie {
       description: json['overview'],
       posterPath: json['poster_path'],
       rating: json['vote_average'].toDouble(),
+      isFavorite: json['is_favorite'] ?? false,
     );
   }
 }

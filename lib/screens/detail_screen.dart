@@ -6,20 +6,56 @@ import '../utils/dark_or_light_theme.dart';
 import '../models/movie.dart';
 import '../widgets/image.dart';
 import '../services/auth_service.dart';
+import '../bloc/movie_bloc.dart';
+import '../bloc/movie_event.dart';
 
-class MovieDetailScreen extends StatelessWidget {
+class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
 
   MovieDetailScreen({required this.movie});
 
   @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double imageSize = screenWidth * 0.8;
+  _MovieDetailScreenState createState() => _MovieDetailScreenState();
+}
 
+class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  late bool isFavorite;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.movie.isFavorite;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(movie.title),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                widget.movie.title,
+                style: TextStyle(
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.yellow : null,
+              ),
+              onPressed: () {
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+                context.read<MovieBloc>().add(ToggleFavorite(widget.movie.id, isFavorite));
+              },
+            ),
+          ],
+        ),
         backgroundColor: Colors.deepOrange,
         actions: <Widget>[
           IconButton(
@@ -41,41 +77,10 @@ class MovieDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Image.network(
-              'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+              'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
               fit: BoxFit.cover,
-              width: imageSize,
-              height: imageSize,
               errorBuilder: (context, error, stackTrace) =>
                   PlaceholderImageWidget(),
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              movie.title,
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Rating:',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '${movie.rating}',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepOrange,
-                  ),
-                ),
-              ],
             ),
             SizedBox(height: 16.0),
             Text(
@@ -87,7 +92,7 @@ class MovieDetailScreen extends StatelessWidget {
             ),
             SizedBox(height: 8.0),
             Text(
-              movie.description,
+              widget.movie.description,
               style: TextStyle(
                 fontSize: 16.0,
               ),
