@@ -1,5 +1,7 @@
+// screens/register_screen.dart
+
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart'; // Ensure this path is correct
+import '../services/auth_service.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override

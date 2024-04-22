@@ -16,6 +16,9 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     on<FetchMovies>(_fetchMovies);
     on<SearchMovies>(_searchMovies);
     on<DeleteMovie>(_deleteMovie);
+    on<FetchTopRatedMovies>(_fetchTopRatedMovies);
+    on<FetchNowPlayingMovies>(_fetchNowPlayingMovies);
+    on<FetchPopularMovies>(_fetchPopularMovies);
     _loadDeletedMovies();
   }
 
@@ -30,11 +33,35 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     await prefs.setStringList('deletedMovies', _deletedMovieIds.map((id) => id.toString()).toList());
   }
 
+  Future<void> _fetchTopRatedMovies(FetchTopRatedMovies event, Emitter<MovieState> emit) async {
+    await _fetchMovieCategory('top_rated', emit);
+  }
+
+  Future<void> _fetchNowPlayingMovies(FetchNowPlayingMovies event, Emitter<MovieState> emit) async {
+    await _fetchMovieCategory('now_playing', emit);
+  }
+
+  Future<void> _fetchMovieCategory(String category, Emitter<MovieState> emit) async {
+    emit(MoviesLoading());
+    try {
+      _movies = await movieApi.getMovies(category);
+      _movies.removeWhere((movie) => _deletedMovieIds.contains(movie.id));
+      emit(MoviesLoaded(movies: _movies));
+    } catch (e) {
+      emit(MoviesError(message: e.toString()));
+    }
+  }
+
+
+  Future<void> _fetchPopularMovies(FetchPopularMovies event, Emitter<MovieState> emit) async {
+    await _fetchMovieCategory('popular', emit);
+  }
+
   Future<void> _fetchMovies(FetchMovies event, Emitter<MovieState> emit) async {
     emit(MoviesLoading());
     try {
       _loadDeletedMovies();
-      _movies = await movieApi.getMovies();
+      _movies = await movieApi.getMovies("upcoming");
       _movies.removeWhere((movie) => _deletedMovieIds.contains(movie.id));
       emit(MoviesLoaded(movies: _movies));
     } catch (e) {

@@ -17,14 +17,22 @@ class MovieListScreen extends StatefulWidget {
 class _MovieListScreenState extends State<MovieListScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<MovieBloc>().add(FetchMovies());
-  }
-
   void _onSearchChanged() {
     context.read<MovieBloc>().add(SearchMovies(_searchController.text));
+  }
+
+  int _currentIndex = 0;
+  final List<Widget> _children = [
+    MovieCategoryScreen(category: 'upcoming'),
+    MovieCategoryScreen(category: 'top_rated'),
+    MovieCategoryScreen(category: 'now_playing'),
+    MovieCategoryScreen(category: 'popular'),
+  ];
+
+  void onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
@@ -64,45 +72,82 @@ class _MovieListScreenState extends State<MovieListScreen> {
           ),
         ],
       ),
-      body: BlocBuilder<MovieBloc, MovieState>(
-        builder: (context, state) {
-          if (state is MoviesLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is MoviesLoaded) {
-            return ListView.builder(
-              itemCount: state.movies.length,
-              itemBuilder: (context, index) {
-                final movie = state.movies[index];
-                return Dismissible(
-                  key: Key(movie.id.toString()),
-                  background: Container(color: Colors.red),
-                  onDismissed: (direction) {
-                    context.read<MovieBloc>().add(DeleteMovie(movie.id));
+      body: _children[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: onTabTapped,
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.movie_filter),
+            label: 'Upcoming',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Top Rated',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.new_releases),
+            label: 'Now Playing',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up),
+            label: 'Popular',
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("${movie.title} deleted")),
-                    );
-                  },
-                  child: InkWell(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MovieDetailScreen(movie: movie),
-                      ),
-                    ),
-                    child: SizedBox(
-                      width: cardWidth,
-                      child: MovieCardWidget(movie: movie),
+class MovieCategoryScreen extends StatelessWidget {
+  final String category;
+
+  MovieCategoryScreen({required this.category});
+
+  @override
+  Widget build(BuildContext context) {
+    context.read<MovieBloc>().add(
+        category == 'upcoming' ? FetchMovies() :
+        category == 'top_rated' ? FetchTopRatedMovies() :
+        category == 'now_playing' ? FetchNowPlayingMovies() :
+        FetchPopularMovies()
+    );
+
+    return BlocBuilder<MovieBloc, MovieState>(
+      builder: (context, state) {
+        if (state is MoviesLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is MoviesLoaded) {
+          return ListView.builder(
+            itemCount: state.movies.length,
+            itemBuilder: (context, index) {
+              final movie = state.movies[index];
+              return Dismissible(
+                key: Key(movie.id.toString()),
+                background: Container(color: Colors.red),
+                onDismissed: (direction) {
+                  context.read<MovieBloc>().add(DeleteMovie(movie.id));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("${movie.title} deleted")),
+                  );
+                },
+                child: InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => MovieDetailScreen(movie: movie),
                     ),
                   ),
-                );
-              },
-            );
-          } else if (state is MoviesError) {
-            return Center(child: Text('Failed to load movies: ${state.message}'));
-          }
-          return SizedBox.shrink();
-        },
-      ),
+                  child: MovieCardWidget(movie: movie),
+                ),
+              );
+            },
+          );
+        } else if (state is MoviesError) {
+          return Center(child: Text('Failed to load movies: ${state.message}'));
+        }
+        return SizedBox.shrink();
+      },
     );
   }
 }
