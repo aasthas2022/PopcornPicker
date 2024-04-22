@@ -17,7 +17,7 @@ class MovieListScreen extends StatefulWidget {
 class _MovieListScreenState extends State<MovieListScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  void _onSearchChanged() {
+  void  _onSearchChanged() {
     context.read<MovieBloc>().add(SearchMovies(_searchController.text));
   }
 
