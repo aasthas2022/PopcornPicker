@@ -59,10 +59,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         backgroundColor: Colors.deepOrange,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.lightbulb_outline),
-            onPressed: () => context.read<AppStateCubit>().toggleTheme(),
-          ),
-          IconButton(
             icon: Icon(Icons.logout),
             onPressed: () async {
               await AuthService().signOut();

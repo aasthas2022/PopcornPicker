@@ -5,11 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_list/screens/profile_edit_screen.dart';
 import '../bloc/movie_bloc.dart';
 import '../bloc/movie_event.dart';
-import '../bloc/movie_state.dart';
-import '../utils/dark_or_light_theme.dart';
 import '../widgets/search.dart';
-import '../widgets/movie_card.dart';
-import 'detail_screen.dart';
 import '../services/auth_service.dart';
 import 'movie_category_screen.dart';
 
@@ -62,10 +58,6 @@ class _MovieListScreenState extends State<MovieListScreen> {
                 delegate: MovieSearchDelegate(),
               );
             },
-          ),
-          IconButton(
-            icon: Icon(Icons.lightbulb_outline),
-            onPressed: () => context.read<AppStateCubit>().toggleTheme(),
           ),
           IconButton(
             icon: Icon(Icons.logout),
