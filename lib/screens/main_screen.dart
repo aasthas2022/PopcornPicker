@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_list/screens/profile_edit_screen.dart';
 import '../bloc/movie_bloc.dart';
 import '../bloc/movie_event.dart';
 import '../bloc/movie_state.dart';
@@ -10,6 +11,7 @@ import '../widgets/search.dart';
 import '../widgets/movie_card.dart';
 import 'detail_screen.dart';
 import '../services/auth_service.dart';
+import 'movie_category_screen.dart';
 
 class MovieListScreen extends StatefulWidget {
   @override
@@ -72,6 +74,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
               Navigator.of(context).pushReplacementNamed('/login');
             },
           ),
+          _buildProfileIcon(),
         ],
       ),
       body: _children[_currentIndex],
@@ -103,66 +106,33 @@ class _MovieListScreenState extends State<MovieListScreen> {
       ),
     );
   }
-}
 
-class MovieCategoryScreen extends StatelessWidget {
-  final String category;
-
-  MovieCategoryScreen({required this.category});
-
-  @override
-  Widget build(BuildContext context) {
-    if (category == 'favorites') {
-      context.read<MovieBloc>().add(FetchFavorites());  // Assuming you have an event to fetch favorites
-    } else {
-      context.read<MovieBloc>().add(
-          category == 'upcoming' ? FetchMovies() :
-          category == 'top_rated' ? FetchTopRatedMovies() :
-          category == 'now_playing' ? FetchNowPlayingMovies() :
-          FetchPopularMovies()
-      );
-    }
-
-    return BlocBuilder<MovieBloc, MovieState>(
-      builder: (context, state) {
-        if (state is MoviesLoading) {
-          return Center(child: CircularProgressIndicator());
-        } else if (state is MoviesLoaded) {
-          return ListView.builder(
-            itemCount: state.movies.length,
-            itemBuilder: (context, index) {
-              final movie = state.movies[index];
-              return Dismissible(
-              key: Key(movie.id.toString()),
-              background: Container(color: Colors.red),
-              onDismissed: (direction) {
-                context.read<MovieBloc>().add(DeleteMovie(movie.id));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("${movie.title} deleted")),
-                );
-              },
-              child: InkWell(
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MovieDetailScreen(movie: movie),
-                  ),
-                ),
-                child: MovieCardWidget(
-                    movie: movie,
-                    onFavoriteToggle: (isFavorite) {
-                      context.read<MovieBloc>().add(ToggleFavorite(movie.id, isFavorite));
-                    }
-                ),
-              ),
-              );
-
-            },
-          );
-        } else if (state is MoviesError) {
-          return Center(child: Text('Failed to load movies: ${state.message}'));
-        }
-        return SizedBox.shrink();
-      },
+  Widget _buildProfileIcon() {
+    return PopupMenuButton<int>(
+      onSelected: (item) => _select(item, context),
+      itemBuilder: (context) => [
+        PopupMenuItem<int>(
+          value: 0,
+          child: Row(
+            children: [
+              SizedBox(width: 8),
+              Text('View and Edit Profile'),  // or use FirebaseAuth.instance.currentUser.displayName
+            ],
+          ),
+        ),
+      ],
+      icon: Icon(Icons.account_circle),
     );
   }
+
+  void _select(int item, BuildContext context) {
+    switch (item) {
+      case 0:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ProfileEditScreen()),
+        );
+        break;
+    }
+  }
 }
+

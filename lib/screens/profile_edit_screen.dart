@@ -22,39 +22,82 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      var userData = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (userData.exists) {
+        Map<String, dynamic> data = userData.data()!;
+        _nameController.text = data['name'] ?? '';
+        _ageController.text = data['age'] ?? '';
+        _bioController.text = data['bio'] ?? '';
+        if (data['imageUrl'] != null && data['imageUrl'] != 'default-image-url') {
+          setState(() {
+            _profileImage = NetworkImage(data['imageUrl']);
+          });
+        }
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      print("No user found!");
+    }
+  }
+
+  Widget _buildProfileImage() {
+    return CircleAvatar(
+      radius: 60,
+      backgroundColor: Colors.grey.shade200,
+      backgroundImage: _profileImage != null ? _profileImage : AssetImage('assets/default_profile.jpg'),
+    );
+  }
+
+
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      dynamic newImage;
       if (kIsWeb) {
-        // Load the image as bytes if it's the web
-        newImage = await pickedFile.readAsBytes();
+        // On the web, load the image as bytes and convert to MemoryImage
+        Uint8List imageData = await pickedFile.readAsBytes();
+        setState(() {
+          _profileImage = MemoryImage(imageData);
+        });
       } else {
-        // Load the image as a file if it's mobile
-        newImage = File(pickedFile.path);
+        // On mobile, use FileImage for local file paths
+        File imageFile = File(pickedFile.path);
+        setState(() {
+          _profileImage = FileImage(imageFile);
+        });
       }
-      setState(() {
-        _profileImage = newImage;
-      });
     }
   }
+
 
   Future<void> _saveProfile() async {
     try {
       setState(() => _isLoading = true);
       String imageUrl = '';
       if (_profileImage != null) {
-        // File name example: Using the user's UID with a JPG extension for uniqueness.
         final ref = FirebaseStorage.instance
             .ref()
             .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
 
         print("Start uploading image to the root folder");
-        if (kIsWeb) {
+
+        if (_profileImage is MemoryImage) {
+          // Extract bytes from MemoryImage and upload (For web)
           final metadata = SettableMetadata(contentType: 'image/jpeg');
-          await ref.putData(_profileImage, metadata);
-        } else {
-          await ref.putFile(_profileImage);
+          await ref.putData((_profileImage as MemoryImage).bytes, metadata);
+        } else if (_profileImage is FileImage) {
+          // Upload file directly (For mobile)
+          await ref.putFile((_profileImage as FileImage).file);
         }
 
         imageUrl = await ref.getDownloadURL();
@@ -62,14 +105,13 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       }
 
       print("Start updating Firestore");
-      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).set({
+      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
         'name': _nameController.text.trim(),
         'age': _ageController.text.trim(),
         'bio': _bioController.text.trim(),
         'imageUrl': imageUrl.isNotEmpty ? imageUrl : 'default-image-url',
       });
 
-      print("Profile saved"); // Debugging output
       Navigator.of(context).pushReplacementNamed('/main');
     } catch (e) {
       print("An error occurred: $e"); // Output error
@@ -89,18 +131,14 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       appBar: AppBar(
         title: Text('Edit Profile'),
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: _profileImage != null
-                  ? (kIsWeb
-                  ? MemoryImage(_profileImage as Uint8List) as ImageProvider
-                  : FileImage(_profileImage as File) as ImageProvider)
-                  : AssetImage('assets/default_profile.jpg') as ImageProvider,
-            ),
+            _buildProfileImage(),
+            SizedBox(height: 16),
             TextButton.icon(
               icon: Icon(Icons.image),
               label: Text('Change Picture'),
@@ -120,10 +158,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               decoration: InputDecoration(labelText: 'Bio'),
             ),
             SizedBox(height: 20),
-            _isLoading
-                ? CircularProgressIndicator()
-                : ElevatedButton(
-              onPressed: _saveProfile,
+            ElevatedButton(
+              onPressed: () => _saveProfile(),
               child: Text('Save Profile'),
             ),
           ],
