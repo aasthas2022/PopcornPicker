@@ -1,5 +1,4 @@
 # PopcornPicker
-
 Welcome to **PopcornPicker**, an innovative movie list application designed to elevate your movie discovery and management experience. Whether you're a cinephile looking to track upcoming releases or a casual movie-goer searching for weekend viewing options, PopcornPicker offers a tailored experience that ensures you'll always find something worth watching.
 
 ## Features
