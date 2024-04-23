@@ -105,12 +105,17 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       }
 
       print("Start updating Firestore");
-      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
-        'name': _nameController.text.trim(),
-        'age': _ageController.text.trim(),
-        'bio': _bioController.text.trim(),
-        'imageUrl': imageUrl.isNotEmpty ? imageUrl : 'default-image-url',
-      });
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'name': _nameController.text.trim(),
+          'age': _ageController.text.trim(),
+          'bio': _bioController.text.trim(),
+          'imageUrl': imageUrl.isNotEmpty ? imageUrl : 'default-image-url',
+        }, SetOptions(merge: true));
+      } else {
+        print("No user logged in.");
+      }
 
       Navigator.of(context).pushReplacementNamed('/main');
     } catch (e) {
@@ -122,6 +127,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       setState(() => _isLoading = false);
     }
   }
+
 
 
 

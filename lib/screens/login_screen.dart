@@ -1,5 +1,6 @@
 // screens/login_screen.dart
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_list/screens/register_screen.dart';
 import '../services/auth_service.dart';
@@ -28,11 +29,29 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text
       );
       Navigator.pushReplacementNamed(context, '/main');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login failed: ${e.toString()}')));
+    } on FirebaseAuthException catch (e) {
+      _showErrorDialog(e.message ?? "An unknown error occurred.");
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Authentication Error'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
   }
 
   void _navigateToRegister() {
@@ -44,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Login'),
+        backgroundColor: Colors.deepOrange,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

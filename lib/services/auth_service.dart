@@ -10,8 +10,6 @@ class AuthService {
   Stream<User?> get userChanges => _auth.authStateChanges();
 
   Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
-    print(email);
-    print(password);
     return await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 

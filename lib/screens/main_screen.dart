@@ -27,7 +27,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
     MovieCategoryScreen(category: 'top_rated'),
     MovieCategoryScreen(category: 'now_playing'),
     MovieCategoryScreen(category: 'popular'),
-    MovieCategoryScreen(category: 'favorites'), // Added a new category for favorites
+    MovieCategoryScreen(category: 'favorites'),
   ];
 
   void onTabTapped(int index) {
@@ -93,7 +93,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
-              label: 'Favorites'),  // Added an icon for favorites
+              label: 'Favorites'),
         ],
       ),
     );
@@ -108,7 +108,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
           child: Row(
             children: [
               SizedBox(width: 8),
-              Text('View and Edit Profile'),  // or use FirebaseAuth.instance.currentUser.displayName
+              Text('View and Edit Profile'),
             ],
           ),
         ),
