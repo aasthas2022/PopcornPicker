@@ -10,9 +10,13 @@ Welcome to **PopcornPicker**, an innovative movie list application designed to e
 - **Detailed Movie Insights:** Dive deep into movie details including synopses, ratings, and more.
 - **Search Functionality:** Quickly find films with a robust search feature that lets you explore movies based on titles or keywords.
 - **Personalized Watchlist:** Save your favorites and plan your movie nights with a personalized watchlist.
+- **Manage Favorites:** Add or remove movies from your favorites for quick access anytime.
+- **User Authentication:** Secure login and registration system to personalize and secure your experience.
+- **Profile Management:** Update your user profile including preferences and photo.
 - **Dark and Light Modes:** Choose between theme options for optimal viewing, no matter the time of day.
 - **Interactive UI:** A user-friendly interface with smooth transitions and responsive design.
 - **Local Preferences Storage:** Your settings and preferences are saved locally to provide a personalized experience.
+- **Firebase Integration:** Leverages Firebase for user authentication and data storage.
 
 ## Installation
 
@@ -23,7 +27,7 @@ PopcornPicker is built using Flutter, so you will need to have Flutter installed
 
 2. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/PopcornPicker.git
+   git clone https://github.com/aasthas2022/PopcornPicker
    cd PopcornPicker
    ```
 
@@ -51,6 +55,7 @@ Each movie card provides essential information at a glance. Click on any movie t
 - **Dart:** A client-optimized language for fast apps on any platform.
 - **Bloc:** For managing the app's state using the BLoC pattern.
 - **SharedPreferences:** To locally store user settings and preferences.
+- **Firebase:** For real-time database management, user authentication, and cloud storage.
 - **TMDB API:** For fetching real-time data about movies.
 
 ## Contributing
@@ -75,3 +80,4 @@ We welcome contributions to **PopcornPicker**. If you have suggestions or issues
 ## License
 
 **PopcornPicker** is released under the MIT License. See the `LICENSE` file for more information.
+.
