@@ -87,6 +87,26 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               ),
             ),
             SizedBox(height: 8.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Rating:',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              '${widget.movie.rating}',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepOrange,
+              ),
+            ),
+          ],
+        ),
             Text(
               widget.movie.description,
               style: TextStyle(

@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
         title: Text('Login'),
         backgroundColor: Colors.deepOrange,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
