@@ -5,7 +5,7 @@ import '../models/movie.dart';
 
 class MovieApi {
   final String baseUrl = 'https://api.themoviedb.org/3';
-  final String bearerToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NDdmYjAxZDU0OTk4NTZmZDE2NTViY2MzM2ZjYmQxYyIsInN1YiI6IjY1ZGZhNmYwYjE4ZjMyMDE3YjQ4NWU4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.J2STaW45cxZRQxWFY8H8wbkGaZf_MFUVzBZFFYZWbWo";
+  final String bearerToken = "INPUT YOUR BEARER TOKEN";
 
   Future<List<Movie>> getMovies(String category) async {
     final response = await http.get(
