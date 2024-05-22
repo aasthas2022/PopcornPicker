@@ -17,6 +17,10 @@ Welcome to **PopcornPicker**, an innovative movie list application designed to e
 - **Local Preferences Storage:** Your settings and preferences are saved locally to provide a personalized experience.
 - **Firebase Integration:** Leverages Firebase for user authentication and data storage.
 
+## Project Demo Video
+
+https://github.com/aasthas2022/PopcornPicker/assets/126644082/91b17f41-2cea-4163-9bac-684c00887d88
+
 ## Installation
 
 PopcornPicker is built using Flutter, so you will need to have Flutter installed on your machine. Follow these steps to get started:
